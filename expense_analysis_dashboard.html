@@ -1,0 +1,290 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+  .section-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .kpi { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .kpi-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .kpi-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .kpi-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+  .kpi-value.warn { color: #BA7517; }
+  .kpi-value.danger { color: #A32D2D; }
+  .kpi-value.success { color: #3B6D11; }
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; }
+  .chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .insight-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 14px 16px; }
+  .insight-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .insight-icon { font-size: 18px; }
+  .insight-heading { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .insight-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+  .badge-warn { background: #FAEEDA; color: #854F0B; }
+  .badge-danger { background: #FCEBEB; color: #A32D2D; }
+  .badge-ok { background: #EAF3DE; color: #3B6D11; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; font-size: 11px; color: var(--color-text-secondary); }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  .anomaly-table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .anomaly-table th { text-align: left; color: var(--color-text-secondary); font-weight: 500; padding: 6px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .anomaly-table td { padding: 6px 8px; color: var(--color-text-primary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .anomaly-table tr:last-child td { border-bottom: none; }
+</style>
+
+<div style="padding: 1rem 0;">
+  <h2 style="sr-only">Expense Data Analysis Dashboard</h2>
+
+  <p class="section-label">KPI summary</p>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Total spend</div>
+      <div class="kpi-value">₹19.08L</div>
+      <div class="kpi-sub">Across 9 transactions</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg. transaction</div>
+      <div class="kpi-value">₹2.12L</div>
+      <div class="kpi-sub">May–Jul 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Largest expense</div>
+      <div class="kpi-value warn">₹7.5L</div>
+      <div class="kpi-sub">Inventory — 39.3%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">GST liability</div>
+      <div class="kpi-value danger">₹1.03L</div>
+      <div class="kpi-sub">1 receipt missing GST</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Reimbursements</div>
+      <div class="kpi-value">₹17,100</div>
+      <div class="kpi-sub">1 pending (₹3,400)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Receipts filed</div>
+      <div class="kpi-value success">3 / 9</div>
+      <div class="kpi-sub">33% receipt coverage</div>
+    </div>
+  </div>
+
+  <p class="section-label">Spend breakdown</p>
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">By category (₹)</div>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:#3266ad"></span>Inventory</span>
+        <span><span class="legend-dot" style="background:#5a9e78"></span>Photography</span>
+        <span><span class="legend-dot" style="background:#c07040"></span>Web dev</span>
+        <span><span class="legend-dot" style="background:#8e5cab"></span>Marketing</span>
+        <span><span class="legend-dot" style="background:#888780"></span>Others</span>
+      </div>
+      <div style="position: relative; width: 100%; height: 200px;">
+        <canvas id="catChart" role="img" aria-label="Horizontal bar chart of expense categories. Inventory ₹7.5L is highest, followed by Photography ₹3.2L, Website Dev ₹2.5L, Marketing ₹2L, Recruitment ₹1.2L, Logistics ₹1.1L, Branding ₹75K, Hosting ₹48K, Payment Gateway ₹35K.">Expense by category from highest: Inventory 7.5L, Photography 3.2L, Web Dev 2.5L, Marketing 2L, others smaller.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Monthly spend trend (₹)</div>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:#3266ad"></span>Monthly total</span>
+      </div>
+      <div style="position: relative; width: 100%; height: 200px;">
+        <canvas id="monthChart" role="img" aria-label="Bar chart of monthly spend. May 2026: ₹4.93L, June 2026: ₹12.15L, July 2026: ₹2L.">Monthly totals: May ₹4.93L, June ₹12.15L, July ₹2L so far.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-row" style="grid-template-columns: 1fr 1fr;">
+    <div class="chart-card">
+      <div class="chart-title">Payment mode split</div>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:#3266ad"></span>Bank Transfer 42%</span>
+        <span><span class="legend-dot" style="background:#c07040"></span>RTGS 39%</span>
+        <span><span class="legend-dot" style="background:#5a9e78"></span>Credit Card 13%</span>
+        <span><span class="legend-dot" style="background:#8e5cab"></span>UPI 6%</span>
+      </div>
+      <div style="position: relative; width: 100%; height: 180px;">
+        <canvas id="payChart" role="img" aria-label="Doughnut chart: Bank Transfer 42%, RTGS 39%, Credit Card 13%, UPI 6%.">Payment modes: Bank Transfer 42%, RTGS 39%, Credit Card 13%, UPI 6%.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Spend concentration</div>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:#3266ad"></span>% of total spend</span>
+      </div>
+      <div style="position: relative; width: 100%; height: 180px;">
+        <canvas id="concChart" role="img" aria-label="Bar chart of top 4 spend categories as percent of total spend.">Top 4 categories account for 87% of total spend.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-label">Anomalies & risk flags</p>
+  <div class="chart-card" style="margin-bottom: 24px;">
+    <table class="anomaly-table">
+      <thead>
+        <tr>
+          <th>Flag</th>
+          <th>Detail</th>
+          <th>Severity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Missing GST on Meta Ads receipt</td>
+          <td>₹2L spend — no GST recorded (SN-003)</td>
+          <td><span class="badge badge-danger">High</span></td>
+        </tr>
+        <tr>
+          <td>Inventory = 39% of total spend</td>
+          <td>₹7.5L single transaction via RTGS — no receipt</td>
+          <td><span class="badge badge-danger">High</span></td>
+        </tr>
+        <tr>
+          <td>Receipt coverage only 33%</td>
+          <td>6 of 9 transactions have no filed receipt</td>
+          <td><span class="badge badge-warn">Medium</span></td>
+        </tr>
+        <tr>
+          <td>Pending reimbursement</td>
+          <td>Neha Singh — ₹3,400 SaaS tools not cleared</td>
+          <td><span class="badge badge-warn">Low</span></td>
+        </tr>
+        <tr>
+          <td>June spike (146% MoM)</td>
+          <td>June ₹12.15L vs May ₹4.93L — bulk launch spend</td>
+          <td><span class="badge badge-ok">Info</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="section-label">Key insights</p>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-header">
+        <i class="ti ti-trending-up insight-icon" style="color:#3B6D11;" aria-hidden="true"></i>
+        <div class="insight-heading">Launch-phase spend</div>
+      </div>
+      <div class="insight-body">All expenses align with a new product/e-commerce launch — inventory, photography, website, marketing, logistics. This is expected pre-revenue investment, not irregular spending.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-header">
+        <i class="ti ti-alert-triangle insight-icon" style="color:#BA7517;" aria-hidden="true"></i>
+        <div class="insight-heading">Inventory dominates</div>
+      </div>
+      <div class="insight-body">Inventory at 39.3% (₹7.5L) is the single largest line item. No receipt exists for it. For a startup, this is the highest financial risk — reconciliation needed immediately.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-header">
+        <i class="ti ti-receipt insight-icon" style="color:#A32D2D;" aria-hidden="true"></i>
+        <div class="insight-heading">Compliance gap</div>
+      </div>
+      <div class="insight-body">Only 3 receipts filed for 9 transactions. Missing GST on Meta Ads could create input tax credit issues. A receipt policy should be enforced from day one.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-header">
+        <i class="ti ti-cash insight-icon" style="color:#185FA5;" aria-hidden="true"></i>
+        <div class="insight-heading">Payment mix is healthy</div>
+      </div>
+      <div class="insight-body">81% of spend uses traceable bank-grade methods (Bank Transfer + RTGS). Only 6% via UPI (₹1.1L) which is acceptable for small vendor payments. No cash transactions.</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 8px;">
+    <button onclick="sendPrompt('Give me 5 specific cost-optimization recommendations based on this expense analysis')" style="font-size: 13px; padding: 8px 18px; cursor: pointer; border-radius: var(--border-radius-md);">
+      Get cost optimization recommendations ↗
+    </button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const catColors = ['#3266ad','#5a9e78','#c07040','#8e5cab','#888780','#c0884a','#4a7ab5','#6aa84f','#a0522d'];
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Inventory','Photography','Website Dev','Marketing','Recruitment','Logistics','Branding','Hosting','Pay. Gateway'],
+    datasets: [{
+      label: 'Amount (₹)',
+      data: [750000,320000,250000,200000,120000,110000,75000,48000,35000],
+      backgroundColor: catColors,
+      borderWidth: 0
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: v => ' ₹' + (v.raw/100000).toFixed(2) + 'L' } } },
+    scales: {
+      x: { ticks: { callback: v => '₹' + (v/100000).toFixed(0) + 'L', font: { size: 10 } }, grid: { color: 'rgba(128,128,128,0.1)' } },
+      y: { ticks: { font: { size: 10 } }, grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('monthChart'), {
+  type: 'bar',
+  data: {
+    labels: ['May 2026','June 2026','July 2026'],
+    datasets: [{
+      label: 'Spend',
+      data: [493000, 1215000, 200000],
+      backgroundColor: ['#3266ad','#c07040','#5a9e78'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: v => ' ₹' + (v.raw/100000).toFixed(2) + 'L' } } },
+    scales: {
+      x: { ticks: { font: { size: 11 } }, grid: { display: false } },
+      y: { ticks: { callback: v => '₹' + (v/100000).toFixed(0) + 'L', font: { size: 10 } }, grid: { color: 'rgba(128,128,128,0.1)' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('payChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Bank Transfer','RTGS','Credit Card','UPI'],
+    datasets: [{
+      data: [800000,750000,248000,110000],
+      backgroundColor: ['#3266ad','#c07040','#5a9e78','#8e5cab'],
+      borderWidth: 2,
+      borderColor: 'transparent'
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: v => v.label + ': ₹' + (v.raw/100000).toFixed(1) + 'L' } } }
+  }
+});
+
+new Chart(document.getElementById('concChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Inventory','Photography','Website','Marketing'],
+    datasets: [{
+      label: '% of total',
+      data: [39.3, 16.8, 13.1, 10.5],
+      backgroundColor: ['#3266ad','#5a9e78','#c07040','#8e5cab'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: v => v.raw.toFixed(1) + '% of total' } } },
+    scales: {
+      x: { ticks: { font: { size: 10 } }, grid: { display: false } },
+      y: { ticks: { callback: v => v + '%', font: { size: 10 } }, grid: { color: 'rgba(128,128,128,0.1)' }, max: 50 }
+    }
+  }
+});
+</script>
